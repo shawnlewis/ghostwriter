@@ -80,6 +80,10 @@
   background-color: #d4e9ab; /* or whatever */
 }
 
+.editor .suggestion {
+  color: #bbb;
+}
+
 .editor .ghost-input {
   color: #888;
 }

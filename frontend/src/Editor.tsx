@@ -3,6 +3,15 @@ import { useEffect, useRef, useState } from "react";
 
 import * as Api from "./api";
 
+const nextTabComplete = (text: string) => {
+  const result = text.match(/([^\w]*[\w]+)/);
+  if (result == null) {
+    return ["", text];
+  }
+  const tabComplete = result[1];
+  return [tabComplete, text.slice(tabComplete.length)];
+};
+
 export const Editor: React.FC = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -26,12 +35,17 @@ export const Editor: React.FC = () => {
     };
   }, [response]);
 
+  const [tabComplete, remainder] = nextTabComplete(
+    response.slice(0, ghostIndex)
+  );
+
   return (
     <div className="editor">
       <div ref={backdropRef} className="backdrop">
         <div className="highlights">
           <span className="user-input">{input}</span>
-          <span className="ghost-input">{response.slice(0, ghostIndex)}</span>
+          <span className="suggestion">{tabComplete}</span>
+          <span className="ghost-input">{remainder}</span>
         </div>
       </div>
       <textarea
@@ -46,13 +60,7 @@ export const Editor: React.FC = () => {
             // tab
             e.stopPropagation();
             e.preventDefault();
-            if (response.length > 0) {
-              let space = response.indexOf(" ");
-              if (space === -1) {
-                space = response.length;
-              }
-              setInput(input + " " + response.slice(0, space));
-            }
+            setInput(input + tabComplete);
           }
         }}
         onScroll={() => {
