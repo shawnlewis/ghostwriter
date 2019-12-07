@@ -15,11 +15,11 @@ resp_queue = None
 def model_loop(
     req_queue,
     resp_queue,
-    model_name='124M',
+    model_name='1558M',
     seed=None,
     nsamples=1,
     batch_size=1,
-    length=10,
+    length=25,
     temperature=1,
     top_k=40,
     top_p=1,
