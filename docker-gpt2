@@ -1,0 +1,1 @@
+sudo docker run -p 5000:5000 -v $PWD:/repo -it --gpus all gpt-2 bash -c "cd /repo; bash"

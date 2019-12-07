@@ -27,4 +27,4 @@ def get_gen():
         return jsonify({'result': textmodel.gen_sample(text)})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
