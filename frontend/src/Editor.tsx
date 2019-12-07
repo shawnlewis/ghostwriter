@@ -13,10 +13,17 @@ export const Editor: React.FC = () => {
 
   useEffect(() => {
     setGhostIndex(0);
-    const incTimer = setInterval(() => {
-      setGhostIndex(gi => gi + 1);
-    }, 100);
-    return () => clearInterval(incTimer);
+    const incTimer =
+      response !== ""
+        ? setInterval(() => {
+            setGhostIndex(gi => gi + 1);
+          }, 100)
+        : null;
+    return () => {
+      if (incTimer != null) {
+        clearInterval(incTimer);
+      }
+    };
   }, [response]);
 
   return (

@@ -24,11 +24,14 @@ export function useGenerate(input: string) {
 
   // Debounce input into slowInput
   const [slowInput, setSlowInput] = useState("");
-  const setSlowInputDebounced = useMemo(() => _.debounce(setSlowInput, 1000), [
+  const setSlowInputDebounced = useMemo(() => _.debounce(setSlowInput, 500), [
     setSlowInput
   ]);
 
-  useEffect(() => setSlowInputDebounced(input), [setSlowInputDebounced, input]);
+  useEffect(() => {
+    setResponse("");
+    setSlowInputDebounced(input);
+  }, [setSlowInputDebounced, input]);
 
   useEffect(() => {
     postData("http://localhost:5000/generate", { text: slowInput }).then(
