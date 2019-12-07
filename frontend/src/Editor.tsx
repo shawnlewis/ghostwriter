@@ -1,13 +1,18 @@
 import React from "react";
+import { useState } from "react";
 
 import * as Api from "./api";
 
 export const Editor: React.FC = () => {
-  const response = Api.useGenerate();
+  const [input, setInput] = useState("");
+  const response = Api.useGenerate(input);
   return (
     <div>
-      <p>Hello</p>
-      <p>Response: {response}</p>
+      <p>{response}</p>
+      <textarea
+        value={input}
+        onChange={e => setInput(e.target.value)}
+      ></textarea>
     </div>
   );
 };

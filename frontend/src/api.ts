@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import * as _ from "lodash";
+import { useEffect, useMemo, useState } from "react";
 
 async function postData(url = "", data = {}) {
   // Default options are marked with *
@@ -18,16 +19,25 @@ async function postData(url = "", data = {}) {
   return await response.json(); // parses JSON response into native JavaScript objects
 }
 
-export function useGenerate() {
+export function useGenerate(input: string) {
   const [response, setResponse] = useState("");
 
+  // Debounce input into slowInput
+  const [slowInput, setSlowInput] = useState("");
+  const setSlowInputDebounced = useMemo(() => _.debounce(setSlowInput, 500), [
+    setSlowInput
+  ]);
+
+  useEffect(() => setSlowInputDebounced(input), [input]);
+
   useEffect(() => {
-    postData("http://localhost:5000/generate", { text: "this is a test" }).then(
+    postData("http://localhost:5000/generate", { text: slowInput }).then(
       result => {
+        const sample1 = result.result[0];
         console.log("result", result);
-        setResponse(JSON.stringify(result));
+        setResponse(sample1);
       }
     );
-  }, []);
+  }, [slowInput]);
   return response;
 }
