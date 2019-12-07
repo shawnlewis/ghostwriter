@@ -20,12 +20,15 @@ export const Editor: React.FC = () => {
   const backdropRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
   const [ghostText, setGhostText] = useState("");
-
   const [ghostIndex, setGhostIndex] = useState(0);
+
+  // Get suggestions beyond our current user input + the ghost
+  // text we already have.
   const fullContext = input + ghostText;
   const context = fullContext.slice(fullContext.length - maxContext);
   const response = Api.useGenerate(context);
 
+  // Increase ghost text if we don't have enough.
   useEffect(() => {
     const nextGhostText = ghostText + response;
     if (nextGhostText.length < maxGhostText) {
@@ -33,6 +36,8 @@ export const Editor: React.FC = () => {
     }
   }, [response]);
 
+  // Ghost text typing interval, active when we have some ghost
+  // text
   useEffect(() => {
     const incTimer =
       ghostText !== ""
@@ -71,15 +76,18 @@ export const Editor: React.FC = () => {
             newInput.length < input.length ||
             !fullText.startsWith(newInput)
           ) {
+            // The user typed something new
             setGhostIndex(0);
             setGhostText("");
           } else {
+            // The user typed exactly what's in the ghost text, so
+            // keep it.
             setGhostText(ghostText.slice(newInput.length - input.length));
           }
         }}
         onKeyDown={e => {
           if (e.key === "Tab") {
-            // tab
+            // Tab complete
             e.stopPropagation();
             e.preventDefault();
             setInput(input + tabComplete);
