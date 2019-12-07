@@ -42,5 +42,5 @@ export function useGenerate(input: string) {
       }
     );
   }, [slowInput]);
-  return response;
+  return input === "" ? "" : response;
 }

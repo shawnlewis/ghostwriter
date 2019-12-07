@@ -12,18 +12,30 @@ const nextTabComplete = (text: string) => {
   return [tabComplete, text.slice(tabComplete.length)];
 };
 
+const maxContext = 400;
+const maxGhostText = 400;
+
 export const Editor: React.FC = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
+  const [ghostText, setGhostText] = useState("");
 
   const [ghostIndex, setGhostIndex] = useState(0);
-  const response = Api.useGenerate(input);
+  const fullContext = input + ghostText;
+  const context = fullContext.slice(fullContext.length - maxContext);
+  const response = Api.useGenerate(context);
 
   useEffect(() => {
-    setGhostIndex(0);
+    const nextGhostText = ghostText + response;
+    if (nextGhostText.length < maxGhostText) {
+      setGhostText(nextGhostText.slice(0, maxGhostText));
+    }
+  }, [response]);
+
+  useEffect(() => {
     const incTimer =
-      response !== ""
+      ghostText !== ""
         ? setInterval(() => {
             setGhostIndex(gi => gi + 1);
           }, 100)
@@ -33,10 +45,10 @@ export const Editor: React.FC = () => {
         clearInterval(incTimer);
       }
     };
-  }, [response]);
+  }, [ghostText]);
 
   const [tabComplete, remainder] = nextTabComplete(
-    response.slice(0, ghostIndex)
+    ghostText.slice(0, ghostIndex)
   );
 
   return (
@@ -52,8 +64,18 @@ export const Editor: React.FC = () => {
         ref={textAreaRef}
         value={input}
         onChange={e => {
-          setGhostIndex(0);
-          setInput(e.target.value);
+          const fullText = input + ghostText;
+          const newInput = e.target.value;
+          setInput(newInput);
+          if (
+            newInput.length < input.length ||
+            !fullText.startsWith(newInput)
+          ) {
+            setGhostIndex(0);
+            setGhostText("");
+          } else {
+            setGhostText(ghostText.slice(newInput.length - input.length));
+          }
         }}
         onKeyDown={e => {
           if (e.key === "Tab") {
@@ -61,6 +83,7 @@ export const Editor: React.FC = () => {
             e.stopPropagation();
             e.preventDefault();
             setInput(input + tabComplete);
+            setGhostText(remainder);
           }
         }}
         onScroll={() => {
