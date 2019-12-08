@@ -73,11 +73,14 @@ export function reducer(state: EditorState, action: EditorAction) {
         };
       }
     case "handleTab":
-      const [tabComplete, remainder] = Lib.nextTabComplete(state.ghostText);
+      const [tabComplete, remainder] = Lib.nextTabComplete(
+        state.ghostText.slice(0, state.ghostIndex)
+      );
       return {
         ...state,
         input: state.input + tabComplete,
-        ghostText: remainder
+        ghostText: remainder,
+        ghostIndex: state.ghostIndex - tabComplete.length
       };
     case "handleGenerateRequestStarted":
       return { ...state, reqID: action.reqID };
