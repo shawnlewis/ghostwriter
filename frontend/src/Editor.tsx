@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useEffect } from "react";
 import { useRef } from "react";
 
 import { useEditorReducer } from "./editorState";
@@ -38,6 +38,12 @@ export const Editor: React.FC = () => {
       window.scrollTo(0, document.body.scrollHeight);
     }
   }, [state.ghostIndex]);
+
+  useEffect(() => {
+    if (textAreaRef.current != null) {
+      textAreaRef.current.focus();
+    }
+  }, []);
 
   const height =
     backdropRef.current != null ? backdropRef.current.clientHeight + 100 : 100;
