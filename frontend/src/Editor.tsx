@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { useRef } from "react";
 
 import { useEditorReducer } from "./editorState";
@@ -29,8 +29,21 @@ export const Editor: React.FC = () => {
     ghostText.slice(0, ghostIndex)
   );
 
+  // Scroll to bottom when ghost types, if we're near the bottom.
+  useLayoutEffect(() => {
+    if (
+      window.innerHeight + window.scrollY >=
+      document.body.scrollHeight - 30
+    ) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }, [state.ghostIndex]);
+
+  const height =
+    backdropRef.current != null ? backdropRef.current.clientHeight + 100 : 100;
+
   return (
-    <div className="editor">
+    <div className="editor" style={{ height }}>
       <div ref={backdropRef} className="backdrop">
         <div className="highlights">
           <span className="user-input">{renderNewLines(input)}</span>
