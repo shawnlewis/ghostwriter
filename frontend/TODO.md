@@ -1,4 +1,0 @@
-- Get rid of last response as soon as user changes input
-- Allow newlines
-- Make tab completion work
-- Show cursor

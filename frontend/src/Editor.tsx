@@ -2,8 +2,9 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 
 import * as Api from "./api";
+import { useEditorReducer } from "./editorState";
 
-const maxContext = 400;
+const maxContext = 800;
 const maxGhostText = 400;
 
 const nextTabComplete = (text: string) => {
@@ -32,9 +33,13 @@ const renderNewLines = (text: string) => {
 export const Editor: React.FC = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
-  const [input, setInput] = useState("");
   const [ghostText, setGhostText] = useState("");
   const [ghostIndex, setGhostIndex] = useState(0);
+
+  const [state, dispatch] = useEditorReducer();
+  const input = state.input;
+  const setInput = (newInput: string) =>
+    dispatch({ type: "setUserInput", input: newInput });
 
   // Get suggestions beyond our current user input + the ghost
   // text we already have.
