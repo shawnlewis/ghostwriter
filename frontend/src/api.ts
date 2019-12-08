@@ -1,7 +1,4 @@
-import * as _ from "lodash";
-import { useEffect, useMemo, useState } from "react";
-
-async function postData(url = "", data = {}) {
+export async function postData(url = "", data = {}) {
   // Default options are marked with *
   const response = await fetch(url, {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -17,30 +14,4 @@ async function postData(url = "", data = {}) {
     body: JSON.stringify(data) // body data type must match "Content-Type" header
   });
   return await response.json(); // parses JSON response into native JavaScript objects
-}
-
-export function useGenerate(input: string) {
-  const [response, setResponse] = useState("");
-
-  // Debounce input into slowInput
-  const [slowInput, setSlowInput] = useState("");
-  const setSlowInputDebounced = useMemo(() => _.debounce(setSlowInput, 500), [
-    setSlowInput
-  ]);
-
-  useEffect(() => {
-    setResponse("");
-    setSlowInputDebounced(input);
-  }, [setSlowInputDebounced, input]);
-
-  useEffect(() => {
-    postData("http://localhost:5000/generate", { text: slowInput }).then(
-      result => {
-        const sample1 = result.result[0];
-        console.log("result", result);
-        setResponse(sample1);
-      }
-    );
-  }, [slowInput]);
-  return input === "" ? "" : response;
 }

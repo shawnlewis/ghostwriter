@@ -1,30 +1,18 @@
 import React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
-import * as Api from "./api";
 import { useEditorReducer } from "./editorState";
-
-const maxContext = 800;
-const maxGhostText = 400;
-
-const nextTabComplete = (text: string) => {
-  const result = text.match(/([^\w]*[\w]+)/);
-  if (result == null) {
-    return ["", text];
-  }
-  const tabComplete = result[1];
-  return [tabComplete, text.slice(tabComplete.length)];
-};
+import * as Lib from "./lib";
 
 const renderNewLines = (text: string) => {
   const lines = text.split("\n");
   return (
     <>
       {lines.map((line, i) => (
-        <>
+        <React.Fragment key={i}>
           {line}
           {i !== lines.length - 1 && <br />}
-        </>
+        </React.Fragment>
       ))}
     </>
   );
@@ -33,45 +21,11 @@ const renderNewLines = (text: string) => {
 export const Editor: React.FC = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
-  const [ghostText, setGhostText] = useState("");
-  const [ghostIndex, setGhostIndex] = useState(0);
 
-  const [state, dispatch] = useEditorReducer();
-  const input = state.input;
-  const setInput = (newInput: string) =>
-    dispatch({ type: "setUserInput", input: newInput });
+  const { state, setInput, handleTab } = useEditorReducer();
+  const { input, ghostText, ghostIndex } = state;
 
-  // Get suggestions beyond our current user input + the ghost
-  // text we already have.
-  const fullContext = input + ghostText;
-  const context = fullContext.slice(fullContext.length - maxContext);
-  const response = Api.useGenerate(context);
-
-  // Increase ghost text if we don't have enough.
-  useEffect(() => {
-    const nextGhostText = ghostText + response;
-    if (nextGhostText.length < maxGhostText) {
-      setGhostText(nextGhostText.slice(0, maxGhostText));
-    }
-  }, [response, ghostText]);
-
-  // Ghost text typing interval, active when we have some ghost
-  // text
-  useEffect(() => {
-    const incTimer =
-      ghostText !== ""
-        ? setInterval(() => {
-            setGhostIndex(gi => gi + 1);
-          }, 100)
-        : null;
-    return () => {
-      if (incTimer != null) {
-        clearInterval(incTimer);
-      }
-    };
-  }, [ghostText]);
-
-  const [tabComplete, remainder] = nextTabComplete(
+  const [tabComplete, remainder] = Lib.nextTabComplete(
     ghostText.slice(0, ghostIndex)
   );
 
@@ -88,30 +42,13 @@ export const Editor: React.FC = () => {
         <textarea
           ref={textAreaRef}
           value={input}
-          onChange={e => {
-            const fullText = input + ghostText;
-            const newInput = e.target.value;
-            setInput(newInput);
-            if (
-              newInput.length < input.length ||
-              !fullText.startsWith(newInput)
-            ) {
-              // The user typed something new
-              setGhostIndex(0);
-              setGhostText("");
-            } else {
-              // The user typed exactly what's in the ghost text, so
-              // keep it.
-              setGhostText(ghostText.slice(newInput.length - input.length));
-            }
-          }}
+          onChange={e => setInput(e.target.value)}
           onKeyDown={e => {
             if (e.key === "Tab") {
               // Tab complete
               e.stopPropagation();
               e.preventDefault();
-              setInput(input + tabComplete);
-              setGhostText(remainder);
+              handleTab();
             }
           }}
           onScroll={() => {
