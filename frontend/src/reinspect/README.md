@@ -1,0 +1,1 @@
+Forked from the public reinspect repo so I could blacklist extra redux actions. The types were screwed up with the default typescript settings so I had to make some modifications (mostly casting to any for expediency).
