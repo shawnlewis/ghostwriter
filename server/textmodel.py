@@ -77,12 +77,10 @@ def model_loop(
         saver.restore(sess, ckpt)
 
         while True:
-            #raw_text = input("Model prompt >>> ")
-            #while not raw_text:
-            #    print('Prompt should not be empty!')
-            #    raw_text = input("Model prompt >>> ")
             raw_text = req_queue.get()
-            print('GOT TEXT ', raw_text)
+            print()
+            print('CONTEXT: ', raw_text)
+            print()
             context_tokens = enc.encode(raw_text)
             generated = 0
             samples = []
@@ -100,10 +98,8 @@ def model_loop(
             resp_queue.put(samples)
 
 def start():
-    print('START CALLED')
     global req_queue, resp_queue
     if req_queue is not None:
-        print('EARLY RETURN')
         return
     req_queue = multiprocessing.Queue()
     resp_queue = multiprocessing.Queue()
@@ -111,8 +107,6 @@ def start():
     p.start()
 
 def gen_sample(text):
-    print('PUTTING TEXT ', text)
     req_queue.put(text)
     result = resp_queue.get()
-    print('GOT TEXT', result)
     return result

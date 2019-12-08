@@ -11,7 +11,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.before_first_request
 def init():
-    print('INIT CALLED')
     textmodel.start()
 
 
