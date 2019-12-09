@@ -1,0 +1,1 @@
+docker run -p 5000:5000 -v $PWD:/repo -it gcr.io/ghostwrite/gpt2-cpu:latest bash -c "cd /repo; bash"

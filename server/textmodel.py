@@ -6,9 +6,11 @@ import os
 import multiprocessing
 import numpy as np
 import tensorflow as tf
+import time
 
 import model, sample, encoder
 
+lock = None
 req_queue = None
 resp_queue = None
 
@@ -98,15 +100,21 @@ def model_loop(
             resp_queue.put(samples)
 
 def start():
-    global req_queue, resp_queue
+    global lock, req_queue, resp_queue
     if req_queue is not None:
         return
+    lock = multiprocessing.Lock()
     req_queue = multiprocessing.Queue()
     resp_queue = multiprocessing.Queue()
     p = multiprocessing.Process(target=model_loop, args=(req_queue, resp_queue))
     p.start()
 
 def gen_sample(text):
+    start_time = time.time()
+    lock.acquire()
+    lock_acquire_time = time.time()
     req_queue.put(text)
     result = resp_queue.get()
+    lock.release()
+    print('Request timing: lock_wait: %s total: %s' % (lock_acquire_time - start_time, time.time() - start_time))
     return result
