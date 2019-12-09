@@ -5,7 +5,9 @@ import * as Api from "./api";
 import * as Lib from "./lib";
 
 const MAX_CONTEXT = 800;
-const MAX_GHOST_TEXT = 400;
+
+const BACKEND = 'http://34.83.36.112:5000';
+// const BACKEND = 'http://localhost:5000';
 
 interface EditorState {
   input: string;
@@ -132,8 +134,7 @@ export function useEditorReducer() {
     const fullContext = state.input + state.ghostText;
     const reqContext = fullContext.slice(fullContext.length - MAX_CONTEXT);
     dispatch({ type: "handleGenerateRequestStarted", reqID });
-    Api.postData("http://localhost:5000/generate", {
-      // Api.postData("http://34.83.36.112:5000/generate", {
+    Api.postData(`${BACKEND}/generate`, {
       text: reqContext
     }).then(result => {
       const response = result.result[0];

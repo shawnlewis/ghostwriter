@@ -65,6 +65,10 @@
   font-size: calc(10px + 2vmin);
 }
 
+.editor textarea:focus {
+  outline: none;
+}
+
 .editor.backdrop {
   overflow: auto;
 
