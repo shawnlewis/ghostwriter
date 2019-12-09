@@ -3,6 +3,7 @@ import {
   useMemo,
   Dispatch,
   useState,
+  useReducer as useReducerReact,
   useEffect,
   useContext,
   ReducerState,
@@ -109,5 +110,11 @@ export function useReducer<R extends Reducer<any, any>, I>(
     ? initializer(initialState)
     : initialState;
 
-  return useHookedReducer(reducer, initializedState, store, id as any);
+  if (store != null) {
+    // eslint-disable-next-line
+    return useHookedReducer(reducer, initializedState, store, id as any);
+  } else {
+    // eslint-disable-next-line
+    return useReducerReact(reducer, initializedState)
+  }
 }
