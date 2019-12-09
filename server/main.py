@@ -25,5 +25,9 @@ def get_gen():
         text = data['text']
         return jsonify({'result': textmodel.gen_sample(text)})
 
+@app.route('/', methods=['GET'])
+def root():
+    return 'ok'
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

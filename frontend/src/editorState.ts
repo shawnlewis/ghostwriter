@@ -88,10 +88,7 @@ export function reducer(state: EditorState, action: EditorAction) {
       if (action.reqID !== state.reqID) {
         return state;
       }
-      const ghostText = (state.ghostText + action.response).slice(
-        0,
-        MAX_GHOST_TEXT
-      );
+      const ghostText = state.ghostText + action.response;
       return { ...state, ghostText: ghostText };
     case "handleTick":
       return {
@@ -136,6 +133,7 @@ export function useEditorReducer() {
     const reqContext = fullContext.slice(fullContext.length - MAX_CONTEXT);
     dispatch({ type: "handleGenerateRequestStarted", reqID });
     Api.postData("http://localhost:5000/generate", {
+      // Api.postData("http://34.83.36.112:5000/generate", {
       text: reqContext
     }).then(result => {
       const response = result.result[0];
