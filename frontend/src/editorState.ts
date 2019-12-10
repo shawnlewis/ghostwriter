@@ -6,8 +6,9 @@ import * as Lib from "./lib";
 
 const MAX_CONTEXT = 800;
 
-const BACKEND = 'http://34.83.36.112:5000';
-// const BACKEND = 'http://localhost:5000';
+const BACKEND = Lib.isDev() ?
+ 'http://localhost:5000' :
+ 'http://34.83.36.112:5000';
 
 interface EditorState {
   input: string;
