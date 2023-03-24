@@ -8,7 +8,7 @@ const MAX_CONTEXT = 800;
 
 const BACKEND = Lib.isDev()
   ? "http://localhost:9911"
-  : "http://34.120.249.194:9911";
+  : "https://api.ghostwrite.ai";
 
 interface EditorState {
   input: string;
