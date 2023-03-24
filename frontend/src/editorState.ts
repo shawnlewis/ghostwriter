@@ -1,14 +1,10 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useReducer } from "./reinspect/useReducer";
 
-import * as Api from "./api";
 import * as Lib from "./lib";
+import {ServerInterfaceType} from "./ServerInterface";
 
 const MAX_CONTEXT = 800;
-
-const BACKEND = Lib.isDev()
-  ? "http://localhost:9911"
-  : "http://34.83.36.112:5000";
 
 interface EditorState {
   input: string;
@@ -107,7 +103,7 @@ export function reducer(state: EditorState, action: EditorAction) {
   }
 }
 
-export function useEditorReducer() {
+export function useEditorReducer(serverInterface: ServerInterfaceType) {
   const [state, dispatch] = useReducer(
     reducer,
     {
@@ -136,13 +132,10 @@ export function useEditorReducer() {
     const fullContext = state.input + state.ghostText;
     const reqContext = fullContext.slice(fullContext.length - MAX_CONTEXT);
     dispatch({ type: "handleGenerateRequestStarted", reqID });
-    Api.postData(`${BACKEND}/generate`, {
-      text: reqContext,
-    }).then((result) => {
-      const response = result.result;
+    serverInterface.getPrediction(reqContext, (response) => {
       dispatch({ type: "handleGenerateResponse", reqID, response });
     });
-  }, [state.ghostText, state.input, state.reqID]);
+  }, [state.ghostText, state.input, state.reqID, serverInterface]);
 
   const makeGenerateRequestDebounced = useCallback(() => {
     if (reqDebounceTimer.current != null) {
