@@ -6,9 +6,9 @@ import * as Lib from "./lib";
 
 const MAX_CONTEXT = 800;
 
-const BACKEND = Lib.isDev() ?
- 'http://localhost:5000' :
- 'http://34.83.36.112:5000';
+const BACKEND = Lib.isDev()
+  ? "http://localhost:9911"
+  : "http://34.83.36.112:5000";
 
 interface EditorState {
   input: string;
@@ -62,7 +62,7 @@ export function reducer(state: EditorState, action: EditorAction) {
           input: action.input,
           reqID: state.reqID + 1,
           ghostText: "",
-          ghostIndex: 0
+          ghostIndex: 0,
         };
       } else {
         // The user typed exactly what's in the ghost text, so
@@ -72,7 +72,7 @@ export function reducer(state: EditorState, action: EditorAction) {
           input: action.input,
           ghostText: state.ghostText.slice(
             action.input.length - state.input.length
-          )
+          ),
         };
       }
     case "handleTab":
@@ -83,7 +83,7 @@ export function reducer(state: EditorState, action: EditorAction) {
         ...state,
         input: state.input + tabComplete,
         ghostText: remainder,
-        ghostIndex: state.ghostIndex - tabComplete.length
+        ghostIndex: state.ghostIndex - tabComplete.length,
       };
     case "handleGenerateRequestStarted":
       return { ...state, reqID: action.reqID };
@@ -91,6 +91,7 @@ export function reducer(state: EditorState, action: EditorAction) {
       if (action.reqID !== state.reqID) {
         return state;
       }
+      console.log("RESPONSE", action.response);
       const ghostText = state.ghostText + action.response;
       return { ...state, ghostText: ghostText };
     case "handleTick":
@@ -99,7 +100,7 @@ export function reducer(state: EditorState, action: EditorAction) {
         ghostIndex:
           state.ghostIndex < state.ghostText.length
             ? state.ghostIndex + 1
-            : state.ghostIndex
+            : state.ghostIndex,
       };
     default:
       throw new Error();
@@ -113,9 +114,9 @@ export function useEditorReducer() {
       input: "",
       ghostText: "",
       ghostIndex: 0,
-      reqID: 0
+      reqID: 0,
     },
-    state => state,
+    (state) => state,
     "Editor"
   );
 
@@ -136,9 +137,9 @@ export function useEditorReducer() {
     const reqContext = fullContext.slice(fullContext.length - MAX_CONTEXT);
     dispatch({ type: "handleGenerateRequestStarted", reqID });
     Api.postData(`${BACKEND}/generate`, {
-      text: reqContext
-    }).then(result => {
-      const response = result.result[0];
+      text: reqContext,
+    }).then((result) => {
+      const response = result.result;
       dispatch({ type: "handleGenerateResponse", reqID, response });
     });
   }, [state.ghostText, state.input, state.reqID]);

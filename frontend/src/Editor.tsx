@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useEffect } from "react";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 
 import { useEditorReducer } from "./editorState";
 import * as Lib from "./lib";
@@ -25,8 +25,9 @@ export const Editor: React.FC = () => {
   const { state, setInput, handleTab } = useEditorReducer();
   const { input, ghostText, ghostIndex } = state;
 
-  const [tabComplete, remainder] = Lib.nextTabComplete(
-    ghostText.slice(0, ghostIndex)
+  const [tabComplete, remainder] = useMemo(
+    () => Lib.nextTabComplete(ghostText.slice(0, ghostIndex)),
+    [ghostText, ghostIndex]
   );
 
   // Scroll to bottom when ghost types, if we're near the bottom.
@@ -61,8 +62,8 @@ export const Editor: React.FC = () => {
         <textarea
           ref={textAreaRef}
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => {
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
             if (e.key === "Tab") {
               // Tab complete
               e.stopPropagation();

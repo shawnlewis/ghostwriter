@@ -8,5 +8,5 @@ export const nextTabComplete = (text: string) => {
 };
 
 export const isDev = () => {
-  return (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
-}
+  return !process.env.NODE_ENV || process.env.NODE_ENV === "development";
+};
