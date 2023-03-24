@@ -4,8 +4,8 @@ import * as Api from "./api";
 import * as Lib from "./lib";
 
 const BACKEND = Lib.isDev()
-  ? "http://localhost:9911"
-  : "http://34.83.36.112:5000";
+    ? "http://localhost:9911"
+    : "https://api.ghostwrite.ai";
 
 // Create a random id for the user to use as a session id
 const sessionId = Math.random().toString(36).substring(2, 15);
