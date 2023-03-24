@@ -3,13 +3,12 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 
-import hf_model
+from handle_request import handle_request
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-model = hf_model.HfModel('gpt2')
 
 @app.route("/generate", methods=['POST'])
 @cross_origin()
@@ -20,7 +19,15 @@ def get_gen():
         abort(400)
     else:
         text = data['text']
-        return jsonify({'result': model.gen(text)})
+        username = data.get('username', '')
+        session_id = data.get('sessionId', '')
+        model_id = data.get('modelId', 'gpt2-vanilla') or 'gpt2-vanilla'
+        result = handle_request(model_id=model_id, 
+                                text=text,
+                                username=username,
+                                session_id=session_id,
+                                max_length=50)
+        return jsonify({'result': result})
 
 @app.route('/', methods=['GET'])
 def root():

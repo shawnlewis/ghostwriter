@@ -3,6 +3,7 @@ import { useRef, useMemo } from "react";
 
 import { useEditorReducer } from "./editorState";
 import * as Lib from "./lib";
+import {ServerInterfaceType} from "./ServerInterface";
 
 const renderNewLines = (text: string) => {
   const lines = text.split("\n");
@@ -18,11 +19,11 @@ const renderNewLines = (text: string) => {
   );
 };
 
-export const Editor: React.FC = () => {
+export const Editor: React.FC<{serverInterface: ServerInterfaceType}> = ({serverInterface}) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
 
-  const { state, setInput, handleTab } = useEditorReducer();
+  const { state, setInput, handleTab } = useEditorReducer(serverInterface);
   const { input, ghostText, ghostIndex } = state;
 
   const [tabComplete, remainder] = useMemo(
