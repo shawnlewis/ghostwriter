@@ -10,7 +10,7 @@ import {useServerInterface} from "./ServerInterface";
 
 const App: React.FC = () => {
   const [name, setName] = React.useState("");
-  const [model, setModel] = React.useState("");
+  const [model, setModel] = React.useState("gpt2");
   const [modelOptions, setModelOptions] = React.useState<{[id: string]: {name: string}}>({});
 
   const serverInterface = useServerInterface(model, name);

@@ -22,7 +22,7 @@ def get_gen():
         text = data['text']
         username = data.get('username', '') or '-'
         session_id = data.get('sessionId', '') or '-'
-        model_id = data.get('modelId', 'gpt2-vanilla') or 'gpt2-vanilla'
+        model_id = data.get('modelId', 'gpt2') or 'gpt2'
         result = handle_request(model_id=model_id, 
                                 text=text,
                                 username=username,
