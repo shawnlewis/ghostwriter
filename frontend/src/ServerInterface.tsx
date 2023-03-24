@@ -1,4 +1,4 @@
-import {useCallback} from "react";
+import {useCallback, useMemo} from "react";
 
 import * as Api from "./api";
 import * as Lib from "./lib";
@@ -12,6 +12,7 @@ const sessionId = Math.random().toString(36).substring(2, 15);
 
 export type ServerInterfaceType = {
     getPrediction: (inputText: string, onResult: (resp: string) => void) => void;
+    getModels: (onResult: (models: {[id: string]: {name: string}}) => void) => void;
 }
 
 export const useServerInterface = (modelId: string, username: string): ServerInterfaceType => {
@@ -22,12 +23,19 @@ export const useServerInterface = (modelId: string, username: string): ServerInt
             username,
             sessionId
         }).then((result) => {
-            const response = result.result;
-            onResult(response);
+            onResult(result.result);
         });
     }, [modelId, username])
 
-    return {
-        getPrediction
-    }
+    const getModels = useCallback((onResult: (models: {[id: string]: {name: string}}) => void) => {
+        Api.postData(`${BACKEND}/models`).then((result) => {
+            onResult(result);
+        })
+    }, [])
+    
+
+    return useMemo(() => ({
+        getPrediction,
+        getModels
+    }), [getPrediction, getModels])
 }

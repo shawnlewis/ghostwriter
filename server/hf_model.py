@@ -1,5 +1,3 @@
-import dataclasses
-
 from transformers import pipeline
 
 from model_interface import ModelInterface
@@ -20,6 +18,6 @@ class HfModel(ModelInterface):
         return 'huggingface'
 
 
-# if __name__ == '__main__':
-#     model = HfModel('gpt2')
-#     print(model.gen("Hello, I'm a language model"))
+if __name__ == '__main__':
+    model = HfModel('gpt2')
+    print(model.gen("Hello, I'm a language model"))
