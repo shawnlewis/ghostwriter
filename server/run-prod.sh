@@ -1,1 +1,1 @@
-PYTHONPATH=/gpt-2/src python3 main.py
+gunicorn -w 4 -b 0.0.0.0:9911 'main:app'

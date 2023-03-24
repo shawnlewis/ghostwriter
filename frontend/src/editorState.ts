@@ -8,7 +8,7 @@ const MAX_CONTEXT = 800;
 
 const BACKEND = Lib.isDev()
   ? "http://localhost:9911"
-  : "http://34.83.36.112:5000";
+  : "http://104.154.237.101:9911";
 
 interface EditorState {
   input: string;
