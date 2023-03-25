@@ -1,5 +1,9 @@
 import dataclasses
+import multiprocessing
+import subprocess
 import typing
+
+import wandb
 from model_interface import PrefixTemplate, PrefixedModel
 import hf_model
 import open_ai_model
@@ -48,3 +52,46 @@ multi_model = MultiModelProvider( # TODO: these probably need to be functions so
         }
     }
 )
+
+
+@dataclasses.dataclass
+class SubprocessWBModelProviderRequest:
+    text: str
+    max_length: int
+
+class SubprocessWBModelProvider(ModelInterface):
+    lock = None
+    req_queue = None
+    resp_queue = None
+
+    def __init__(self, model_id: str):
+        self.lock = multiprocessing.Lock()
+        self.req_queue = multiprocessing.Queue()
+        self.resp_queue = multiprocessing.Queue()
+        self.process = multiprocessing.Process(target=self.loop, args=(self.req_queue, self.resp_queue, model))
+
+def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, model_id: str):
+
+    run = wandb.init(config={"model_id": model_id})
+    
+
+
+
+    while True:
+        text = req_queue.get()
+        resp_queue.put(model.gen(text))
+    # # Create a set of pipes to communicate with the subprocess
+    # self.stdin = None
+    # self.stdout = None
+    # self.stderr = None
+    # self.process = None
+
+    # # Create a subprocess that can handle requests
+    # self.process = subprocess.Popen(
+    #     ["python", "model_provider.py"],
+    #     stdin=subprocess.PIPE,
+    #     stdout=subprocess.PIPE,
+    #     stderr=subprocess.PIPE,
+    #     encoding="utf-8",
+    # )
+
