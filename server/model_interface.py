@@ -1,6 +1,5 @@
 import dataclasses
 
-# @dataclasses.dataclass
 class ModelInterface:
     def gen(self, text: str, max_length=50) -> str:
         raise NotImplementedError()
@@ -29,13 +28,3 @@ class PrefixedModel(ModelInterface):
     
     def provider(self) -> str:
         self.raw_model.provider()
-
-
-@dataclasses.dataclass
-class MultiModelProvider(ModelInterface):
-    models: dict[str, ModelInterface]
-
-    def gen(self, model_id: str, text: str, max_length=50) -> str:
-        if model_id not in self.models:
-            raise ValueError(f"Model {model_id} not found")
-        return self.models[model_id].gen(text, max_length)
