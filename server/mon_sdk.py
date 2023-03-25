@@ -14,7 +14,7 @@ def perplexity(text_list):
     return results["perplexities"]
 
 def word_count(text_list):
-    if len(text_piece) < 2:
+    if len(text_list[0]) < 2:
         return 0, 0
     wc = load("word_count", module_type="measurement")
     res = wc.compute(data=text_list)
@@ -24,7 +24,7 @@ def word_count(text_list):
         fraq_unique = float(unique) / float(count)
     except:
         fraq_unique = 0
-  return count, fraq_unique
+    return count, fraq_unique
 
 def toxicity(text_list):
     tox = load("toxicity", module_type="measurement")
@@ -50,19 +50,17 @@ class PredictionRecord:
     def log(self, compute_eval_metrics=True):
         if compute_eval_metrics:
             pred = [self._output]
-            tox = toxicity(pred)
-            perp = perplexity(pred)
-            wc, uniq = word_count(pred)
+            total_words, fraction_unique = word_count(pred)
             record = {
                 "prediction_id": self._prediction_id,
                 "latency": self._latency,
                 **self._inputs,
                 # "inputs": self._inputs,
                 "prediction": self._output,
-                "word_count" : wc,
-                "unique" : uniq,
-                "toxicity" : tox,
-                "perplexity" : perp,
+                "word_count" : total_words,
+                "unique" : fraction_unique,
+                "toxicity" : toxicity(pred),
+                "perplexity" : perplexity(pred),
                 **self._additional_data,
             }
             print("record", record)
