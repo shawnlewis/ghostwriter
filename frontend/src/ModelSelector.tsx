@@ -1,19 +1,11 @@
 import React from "react";
 
-const modelOptions: { [key: string]: { name: string } } = {
-    "gpt-vanilla": {
-        name: "GPT-2",
-    },
-    "gpt-shakespeare": {
-        name: "Shakespeare",
-    }
-}
-
 // Create a model input from the options
 export const ModelSelector: React.FC<{
     model: string;
     setModel: (model: string) => void;
-}> = ({ model, setModel }) => {
+    options: { [key: string]: { name: string } };
+}> = ({ model, setModel, options}) => {
     return (
         <div>
             <label htmlFor="model">Model:</label>
@@ -22,9 +14,9 @@ export const ModelSelector: React.FC<{
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
             >
-                {Object.keys(modelOptions).map((model) => (
+                {Object.keys(options).map((model) => (
                     <option key={model} value={model}>
-                        {modelOptions[model].name}
+                        {options[model].name}
                     </option>
                 ))}
             </select>
