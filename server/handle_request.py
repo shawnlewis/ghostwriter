@@ -10,11 +10,11 @@ def handle_request(
         max_length: int = 50,
 ) -> str:
     """Generate text from the given model and text."""
-    prediction_result = handle_request_raw(model_id=model_id, text=text,username=username,session_id=session_id,max_length=50)
-    text = prediction_result.get()
-    prediction_result.add_data(get_analysis(text))
+    prediction_result = handle_request_raw(model_id=model_id, text=text, username=username,session_id=session_id,max_length=50)
+    response = prediction_result.get()
+    prediction_result.add_data(get_analysis(response))
     prediction_result.log()
-    return text
+    return response
 
 @monitor(False)
 def handle_request_raw(

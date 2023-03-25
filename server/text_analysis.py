@@ -19,7 +19,9 @@ def perplexity(text_list):
     return results["perplexities"]
 
 def word_count(text_list):
-    if len(text_list) < 2:
+    # expect input to be a list of length exactly one,
+    # and the first element to be a string of length at least one
+    if len(text_list) != 1 or len(text_list[0]) < 1:
         return 0, 0
     wc = load("word_count", module_type="measurement")
     res = wc.compute(data=text_list)

@@ -21,7 +21,7 @@ class PredictionRecord:
     def add_data(self, data: dict) -> None:
         self._additional_data.update(data)
 
-   def log(self):
+    def log(self):
         record = {
                 "prediction_id": self._prediction_id,
                 "latency": self._latency,
