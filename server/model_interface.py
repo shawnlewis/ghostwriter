@@ -9,6 +9,9 @@ class ModelInterface:
     
     def provider(self) -> str:
         raise NotImplementedError()
+    
+    def id(self) -> str:
+        return f"{self.provider()}-{self.name()}"
 
 @dataclasses.dataclass
 class PrefixTemplate:
@@ -24,7 +27,8 @@ class PrefixedModel(ModelInterface):
         return self.raw_model.gen(f"{self.template.template} {text}", max_length)
     
     def name(self) -> str:
-        self.raw_model.name()
+        return f"{self.raw_model.name()}-{self.template.short_name}"
     
     def provider(self) -> str:
-        self.raw_model.provider()
+        return self.raw_model.provider()
+

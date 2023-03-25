@@ -1,7 +1,5 @@
-from mon_sdk import monitor
 from model_provider import multi_model
 
-@monitor()
 def handle_request(
         model_id: str,
         text: str,
