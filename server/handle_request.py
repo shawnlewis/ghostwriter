@@ -8,4 +8,7 @@ def handle_request(
         max_length: int = 50,
 ) -> str:
     """Generate text from the given model and text."""
-    return multi_model.gen(model_id, text, max_length)
+    return multi_model.gen(model_id, text, max_length, {
+        'username': username,
+        'session_id': session_id,
+    })

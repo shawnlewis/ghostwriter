@@ -16,10 +16,10 @@ class ModelMeta(typing.TypedDict):
 class MultiModelProvider(ModelInterface):
     models: dict[str, ModelInterface]
 
-    def gen(self, model_id: str, text: str, max_length=50) -> str:
+    def gen(self, model_id: str, text: str, max_length=50, _extra={}) -> str:
         if model_id not in self.models:
             raise ValueError(f"Model {model_id} not found")
-        return self.models[model_id].gen(text, max_length)
+        return self.models[model_id].gen(text, max_length, _extra)
     
     def get_model_meta(self) -> dict[str, str]:
         return {k: ModelMeta(name=v.name()) for k, v in self.models.items()}
@@ -32,6 +32,7 @@ class MultiModelProvider(ModelInterface):
 class SubprocessWBModelProviderRequest:
     text: str
     max_length: int
+    extra: dict
 
 import atexit
 class SubprocessWBModelProvider(ModelInterface):
@@ -49,14 +50,14 @@ class SubprocessWBModelProvider(ModelInterface):
     def provider(self) -> str:
         return self.sub_model.provider()
     
-    def gen(self, text: str, max_length=50) -> str:
+    def gen(self, text: str, max_length=50, _extra={}) -> str:
         if self.process is None:
             self.req_queue = multiprocessing.Queue()
             self.resp_queue = multiprocessing.Queue()
             self.process = multiprocessing.Process(target=loop, args=(self.req_queue, self.resp_queue, self.sub_model))
             self.process.start()
             atexit.register(self.shutdown)
-        self.req_queue.put(SubprocessWBModelProviderRequest(text, max_length))
+        self.req_queue.put(SubprocessWBModelProviderRequest(text, max_length, _extra))
         return self.resp_queue.get()
     
     def shutdown(self):
@@ -105,6 +106,7 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
         res = get_gen(text=req.text, max_length=req.max_length)
         res.add_data({
             "model_id": model_id,
+            **req.extra,
         })
         res.log()
         resp_queue.put(res.get())
