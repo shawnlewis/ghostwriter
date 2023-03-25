@@ -14,9 +14,16 @@ const App: React.FC = () => {
   const [modelOptions, setModelOptions] = React.useState<{[id: string]: {name: string}}>({});
 
   const serverInterface = useServerInterface(model, name);
+
   useEffect(() => {
-    serverInterface.getModels(setModelOptions);  
-  }, [serverInterface]);
+    if (Object.keys(modelOptions).length === 0) {
+      serverInterface.getModels((models) => {
+        if (Object.keys(models).length > 0) {
+          setModelOptions(models);
+        }
+      });  
+    }
+  }, [serverInterface, modelOptions]);
   
 
   return (

@@ -11,6 +11,8 @@ interface EditorState {
   ghostText: string;
   ghostIndex: number;
   reqID: number;
+  predID: string;
+  acceptedText: string;
 }
 
 interface SetUserInputAction {
@@ -25,7 +27,10 @@ interface HandleGenerateRequestStarted {
 
 interface HandleGenerateResponse {
   type: "handleGenerateResponse";
-  response: string;
+  response: {
+    result: string;
+    predictionId: string;
+  };
   reqID: number;
 }
 
@@ -59,16 +64,19 @@ export function reducer(state: EditorState, action: EditorAction) {
           reqID: state.reqID + 1,
           ghostText: "",
           ghostIndex: 0,
+          acceptedText: "",
         };
       } else {
         // The user typed exactly what's in the ghost text, so
         // keep it.
+        const acceptedLength = action.input.length - state.input.length;
+        const acceptedText = state.ghostText.slice(0, acceptedLength);
+        const remainder = state.ghostText.slice(acceptedLength);
         return {
           ...state,
           input: action.input,
-          ghostText: state.ghostText.slice(
-            action.input.length - state.input.length
-          ),
+          ghostText: remainder,
+          acceptedText: state.acceptedText + acceptedText,
         };
       }
     case "handleTab":
@@ -80,6 +88,7 @@ export function reducer(state: EditorState, action: EditorAction) {
         input: state.input + tabComplete,
         ghostText: remainder,
         ghostIndex: state.ghostIndex - tabComplete.length,
+        acceptedText: state.acceptedText + tabComplete,
       };
     case "handleGenerateRequestStarted":
       return { ...state, reqID: action.reqID };
@@ -88,8 +97,8 @@ export function reducer(state: EditorState, action: EditorAction) {
         return state;
       }
       console.log("RESPONSE", action.response);
-      const ghostText = state.ghostText + action.response;
-      return { ...state, ghostText: ghostText };
+      const ghostText = state.ghostText + action.response.result;
+      return { ...state, ghostText: ghostText, predID: action.response.predictionId, acceptedText:""};
     case "handleTick":
       return {
         ...state,
@@ -111,6 +120,8 @@ export function useEditorReducer(serverInterface: ServerInterfaceType) {
       ghostText: "",
       ghostIndex: 0,
       reqID: 0,
+      predID: "",
+      acceptedText: "",
     },
     (state) => state,
     "Editor"
@@ -132,10 +143,13 @@ export function useEditorReducer(serverInterface: ServerInterfaceType) {
     const fullContext = state.input + state.ghostText;
     const reqContext = fullContext.slice(fullContext.length - MAX_CONTEXT);
     dispatch({ type: "handleGenerateRequestStarted", reqID });
+    // if (state.predID !== "" && state.acceptedText !== "") {
+    //   serverInterface.recordAcceptance(state.predID, state.acceptedText)
+    // }
     serverInterface.getPrediction(reqContext, (response) => {
       dispatch({ type: "handleGenerateResponse", reqID, response });
     });
-  }, [state.ghostText, state.input, state.reqID, serverInterface]);
+  }, [state.ghostText, state.input, state.reqID, serverInterface]); //, state.predID, state.acceptedText]);
 
   const makeGenerateRequestDebounced = useCallback(() => {
     if (reqDebounceTimer.current != null) {
@@ -145,13 +159,24 @@ export function useEditorReducer(serverInterface: ServerInterfaceType) {
   }, [makeGenerateRequest]);
 
   useEffect(() => {
-    makeGenerateRequestDebounced();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.input]);
+    if (state.ghostIndex == 0 && state.input.length > 0) {
+      makeGenerateRequestDebounced();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }
+  }, [state.input, state.ghostIndex]);
 
   const setInput = useCallback((input: string) => {
+    const fullText = state.input + state.ghostText;
+    if (
+      input.length < state.input.length ||
+      !fullText.startsWith(input)
+    ) {
+      if (state.predID !== "" && state.acceptedText !== "") {
+        serverInterface.recordAcceptance(state.predID, state.acceptedText)
+      }
+    }
     dispatch({ type: "setUserInput", input });
-  }, []);
+  }, [state.input, state.ghostText, state.predID, state.acceptedText]);
 
   const handleTab = useCallback(() => dispatch({ type: "handleTab" }), []);
 
