@@ -16,7 +16,7 @@ def get_analysis(text):
 def perplexity(text_list):
     perplexity= load("perplexity",  module_type= "measurement")
     results = perplexity.compute(data=text_list, model_id='gpt2')
-    return results["perplexities"]
+    return results["perplexities"][0]
 
 def word_count(text_list):
     # expect input to be a list of length exactly one,
@@ -24,18 +24,19 @@ def word_count(text_list):
     if len(text_list) != 1 or len(text_list[0]) < 1:
         return 0, 0
     wc = load("word_count", module_type="measurement")
-    res = wc.compute(data=text_list)
-    count = res["total_word_count"]
-    unique =  res["unique_words"]
     try:
+        res = wc.compute(data=text_list)
+        count = res["total_word_count"]
+        unique =  res["unique_words"]
         fraq_unique = float(unique) / float(count)
     except:
+        count = 0
         fraq_unique = 0
     return count, fraq_unique
 
 def toxicity(text_list):
     tox = load("toxicity", module_type="measurement")
     results = tox.compute(predictions=text_list)
-    return results["toxicity"]
+    return results["toxicity"][0]
 
 
