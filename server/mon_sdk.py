@@ -5,32 +5,6 @@ import typing
 import wandb
 import datetime
 
-from evaluate import load
-
-# metrics we may care about: perplexity, word_count, toxicity
-def perplexity(text_list):
-    perplexity= load("perplexity",  module_type= "measurement")
-    results = perplexity.compute(data=text_list, model_id='gpt2')
-    return results["perplexities"]
-
-def word_count(text_list):
-    if len(text_list[0]) < 2:
-        return 0, 0
-    wc = load("word_count", module_type="measurement")
-    res = wc.compute(data=text_list)
-    count = res["total_word_count"]
-    unique =  res["unique_words"]
-    try:
-        fraq_unique = float(unique) / float(count)
-    except:
-        fraq_unique = 0
-    return count, fraq_unique
-
-def toxicity(text_list):
-    tox = load("toxicity", module_type="measurement")
-    results = tox.compute(predictions=text_list)
-    return results["toxicity"]
-
 @dataclasses.dataclass
 class PredictionRecord:
     _prediction_id: str
@@ -47,28 +21,8 @@ class PredictionRecord:
     def add_data(self, data: dict) -> None:
         self._additional_data.update(data)
 
-    def log(self, compute_eval_metrics=True):
-        if compute_eval_metrics:
-            pred = [self._output]
-            total_words, fraction_unique = word_count(pred)
-            record = {
-                "prediction_id": self._prediction_id,
-                "latency": self._latency,
-                **self._inputs,
-                # "inputs": self._inputs,
-                "prediction": self._output,
-                "word_count" : total_words,
-                "unique" : fraction_unique,
-                "toxicity" : toxicity(pred),
-                "perplexity" : perplexity(pred),
-                **self._additional_data,
-            }
-            print("record", record)
-            self._wandb_run.log(record)
-
-
-        else:   
-            record = {
+   def log(self):
+        record = {
                 "prediction_id": self._prediction_id,
                 "latency": self._latency,
                 **self._inputs,
@@ -76,8 +30,8 @@ class PredictionRecord:
                 "prediction": self._output,
                 **self._additional_data,
             }
-            print("record", record)
-            self._wandb_run.log(record)
+        print("record", record)
+        self._wandb_run.log(record)
 
 
 def monitor(commit=True, input_preprocessor=None, output_postprocessor=None):
