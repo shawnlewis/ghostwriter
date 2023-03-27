@@ -4,11 +4,11 @@ import typing
 
 import wandb
 from model_interface import PrefixTemplate, PrefixedModel
-import hf_model
+# import hf_model
 import open_ai_model
 from model_interface import ModelInterface
 from mon_sdk import monitor
-from text_analysis import get_analysis
+# from text_analysis import get_analysis
 
 class ModelMeta(typing.TypedDict):
     name: str
@@ -109,25 +109,25 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
             "model_id": model_id,
             **req.extra,
         })
-        res.add_data(get_analysis(res._output))
+        # res.add_data(get_analysis(res._output))
         res.log()
         resp_queue.put(res.get())
     run.finish()
 
 
 shakespeare = PrefixTemplate("Shakespeare", "The following text is in the style of william shakespeare: ")
-gpt2_model = hf_model.HfModel('gpt2')
+# gpt2_model = hf_model.HfModel('gpt2')
 davinci_model = open_ai_model.OAIModel('text-davinci-003')
 
 multi_model = MultiModelProvider.from_models([
-    SubprocessWBModelProvider(gpt2_model),
-    SubprocessWBModelProvider(PrefixedModel(shakespeare, gpt2_model)),
+    # SubprocessWBModelProvider(gpt2_model),
+    # SubprocessWBModelProvider(PrefixedModel(shakespeare, gpt2_model)),
     SubprocessWBModelProvider(davinci_model),
     SubprocessWBModelProvider(PrefixedModel(shakespeare, davinci_model)),
 ])
 
 
-if __name__ == '__main__':
-    print(multi_model.gen('huggingface-gpt2', 'Hello, I am a language model', 50))
-    print(multi_model.gen('huggingface-gpt2-Shakespeare', 'Hello, I am a language model', 50))
+# if __name__ == '__main__':
+#     print(multi_model.gen('huggingface-gpt2', 'Hello, I am a language model', 50))
+#     print(multi_model.gen('huggingface-gpt2-Shakespeare', 'Hello, I am a language model', 50))
     
