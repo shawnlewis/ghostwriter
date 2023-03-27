@@ -159,10 +159,10 @@ export function useEditorReducer(serverInterface: ServerInterfaceType) {
   }, [makeGenerateRequest]);
 
   useEffect(() => {
-    if (state.ghostIndex == 0 && state.input.length > 0) {
+    if (state.ghostIndex === 0 && state.input.length > 0) {
       makeGenerateRequestDebounced();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.input, state.ghostIndex]);
 
   const setInput = useCallback((input: string) => {
@@ -176,7 +176,7 @@ export function useEditorReducer(serverInterface: ServerInterfaceType) {
       }
     }
     dispatch({ type: "setUserInput", input });
-  }, [state.input, state.ghostText, state.predID, state.acceptedText]);
+  }, [state.input, state.ghostText, state.predID, state.acceptedText, serverInterface]);
 
   const handleTab = useCallback(() => dispatch({ type: "handleTab" }), []);
 

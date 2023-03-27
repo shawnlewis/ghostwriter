@@ -15,8 +15,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: calc(10px + 2vmin);
   color: white;
+  padding: 6px;
 }
 
 .App-link {
@@ -33,11 +33,12 @@
 }
 
 .editor {
-  margin-top: 140px;
-  margin-bottom: 140px;
-  width: 600px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  max-width: 600px;
   min-height: 100px;
-
+  font-size: 50px;
+  width: 90%;
   position: relative;
 }
 
@@ -71,6 +72,7 @@
 
 .editor.backdrop {
   overflow: auto;
+  height: 100%;
 
   position: absolute;
   top: 0;
@@ -84,10 +86,13 @@
 .editor.highlights {
   white-space: pre-wrap;
   word-wrap: break-word;
+  /* overflow: hidden; */
 }
 
 .editor .user-input {
   color: transparent;
+  width: 100%;
+  /* display: block; */
 }
 
 .editor .suggestion {
