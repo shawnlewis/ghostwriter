@@ -9,7 +9,7 @@ from model_interface import PrefixTemplate, PrefixedModel
 import open_ai_model
 from model_interface import ModelInterface
 from mon_sdk import monitor
-# from text_analysis import get_analysis
+from text_analysis import TextAnalysis
 
 SERVER_ENV=os.getenv("SERVER_ENV", "dev")
 
@@ -84,6 +84,8 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
     
     model_name = f"model_{model_id}"
 
+    analysis = TextAnalysis()
+
     # So ugly! Damnit! Why don't we actually fix the artifact APIs!!!? This is a
     # total hack for the demo and doesn't even do the right thing. All we are
     # doing is making sure that the artifact is created and then we are linking
@@ -113,8 +115,9 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
             "env": SERVER_ENV,
             **req.extra,
         })
+        res.add_data(analysis.get_analysis(res._output))
+        res.add_data({'output_len': len(res._output)})
         get_gen.commit()
-        # res.add_data(get_analysis(res._output))
         # res.log()
         resp_queue.put(res.get())
     run.finish()
