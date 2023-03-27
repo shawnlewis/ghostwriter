@@ -6,3 +6,4 @@ torch
 wandb
 gunicorn
 openai
+scikit-learn

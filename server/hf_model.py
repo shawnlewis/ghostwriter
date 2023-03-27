@@ -8,7 +8,7 @@ class HfModel(ModelInterface):
         self._model = pipeline('text-generation', model=model_name)
         self._name = model_name
 
-    def gen(self, text, max_length=50):
+    def gen(self, text, max_length=50, _extra={}):
         return self._model(text, max_length=max_length)[0]['generated_text'][len(text):]
     
     def name(self) -> str:
@@ -19,5 +19,5 @@ class HfModel(ModelInterface):
 
 
 if __name__ == '__main__':
-    model = HfModel('gpt2')
+    model = HfModel('huggingface-gpt2')
     print(model.gen("Hello, I'm a language model"))

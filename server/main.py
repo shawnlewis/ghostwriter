@@ -6,7 +6,7 @@ from flask_cors import CORS, cross_origin
 from handle_request import handle_request
 from model_provider import multi_model
 
-app = Flask(__name__)
+app = Flask("ghostwrite")
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -22,7 +22,7 @@ def get_gen():
         text = data['text']
         username = data.get('username', '') or '-'
         session_id = data.get('sessionId', '') or '-'
-        model_id = data.get('modelId', 'gpt2') or 'gpt2'
+        model_id = data.get('modelId', 'huggingface-gpt2') or 'huggingface-gpt2'
         result = handle_request(model_id=model_id, 
                                 text=text,
                                 username=username,

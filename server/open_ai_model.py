@@ -12,13 +12,12 @@ class OAIModel(ModelInterface):
         self._name = model_name
         self._model_params = model_params
 
-    def gen(self, text, max_length=50, request_params={}):
+    def gen(self, text, max_length=50, _extra={}):
         return openai.Completion.create(
             model=self._name,
             prompt=text,
             max_tokens=max_length,
             **self._model_params,
-            **request_params
         )["choices"][0]["text"]
     
     def name(self) -> str:
