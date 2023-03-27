@@ -1,6 +1,7 @@
 import dataclasses
 import multiprocessing
 import typing
+import os
 
 import wandb
 from model_interface import PrefixTemplate, PrefixedModel
@@ -9,6 +10,8 @@ import open_ai_model
 from model_interface import ModelInterface
 from mon_sdk import monitor
 # from text_analysis import get_analysis
+
+SERVER_ENV=os.getenv("SERVER_ENV", "dev")
 
 class ModelMeta(typing.TypedDict):
     name: str
@@ -107,6 +110,7 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
         res = get_gen(text=req.text, max_length=req.max_length)
         res.add_data({
             "model_id": model_id,
+            "env": SERVER_ENV,
             **req.extra,
         })
         # res.add_data(get_analysis(res._output))
