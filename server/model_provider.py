@@ -8,6 +8,7 @@ import hf_model
 import open_ai_model
 from model_interface import ModelInterface
 from mon_sdk import monitor
+from text_analysis import get_analysis
 
 class ModelMeta(typing.TypedDict):
     name: str
@@ -108,6 +109,7 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
             "model_id": model_id,
             **req.extra,
         })
+        res.add_data(get_analysis(res._output))
         res.log()
         resp_queue.put(res.get())
     run.finish()

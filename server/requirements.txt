@@ -1,3 +1,4 @@
+evaluate
 flask
 flask_cors
 transformers
@@ -5,3 +6,4 @@ torch
 wandb
 gunicorn
 openai
+scikit-learn

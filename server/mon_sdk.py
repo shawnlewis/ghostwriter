@@ -5,7 +5,6 @@ import typing
 import wandb
 import datetime
 
-
 @dataclasses.dataclass
 class PredictionRecord:
     _prediction_id: str

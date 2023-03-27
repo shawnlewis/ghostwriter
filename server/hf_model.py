@@ -19,5 +19,5 @@ class HfModel(ModelInterface):
 
 
 if __name__ == '__main__':
-    model = HfModel('gpt2')
+    model = HfModel('huggingface-gpt2')
     print(model.gen("Hello, I'm a language model"))
