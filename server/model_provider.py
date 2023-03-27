@@ -113,8 +113,9 @@ def loop(req_queue:multiprocessing.Queue, resp_queue:multiprocessing.Queue, mode
             "env": SERVER_ENV,
             **req.extra,
         })
+        get_gen.commit()
         # res.add_data(get_analysis(res._output))
-        res.log()
+        # res.log()
         resp_queue.put(res.get())
     run.finish()
 
