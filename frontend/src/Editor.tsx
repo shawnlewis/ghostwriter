@@ -51,7 +51,7 @@ export const Editor: React.FC<{serverInterface: ServerInterfaceType}> = ({server
     backdropRef.current != null ? backdropRef.current.clientHeight + 100 : 100;
 
   return (
-    <div className="editor" style={{ height }}>
+    <div className="editor" style={{ height, overflow: 'hidden' }}>
       <div ref={backdropRef} className="backdrop">
         <div className="highlights">
           <span className="user-input">{renderNewLines(input)}</span>
